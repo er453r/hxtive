@@ -1,0 +1,5 @@
+#!/usr/bin/haxe
+-cp src
+-main com.er453r.hxtive.Test
+--macro addGlobalMetadata('com.er453r', '@:build(com.er453r.hxtive.Reactor.build())')
+-js hxtive-tests.js
