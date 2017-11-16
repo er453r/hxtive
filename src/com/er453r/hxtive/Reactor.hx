@@ -29,6 +29,11 @@ class Reactor {
 				case FieldType.FVar(type, expr):{
 					trace('variable ${ComplexTypeTools.toString(type)}, ${field.name}  ${ExprTools.toString(expr)}');
 
+					//trace(type);
+//					trace(TypeTools.getClass(TypeTools.followWithAbstracts(ComplexTypeTools.toType(type))));
+
+					trace(ComplexTypeTools.toType(type));
+
 					inject = true;
 				}
 
