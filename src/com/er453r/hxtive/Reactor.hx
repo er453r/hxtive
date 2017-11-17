@@ -7,6 +7,7 @@ import com.er453r.macros.MacroUtils;
 import haxe.macro.ComplexTypeTools;
 import haxe.macro.Expr.Field;
 import haxe.macro.Context;
+import haxe.macro.Expr;
 
 class Reactor {
 	public static function build():Array<Field> {
@@ -43,7 +44,7 @@ class Reactor {
 			if(inject){
 				// if has no setter
 				if(MacroUtils.getField(MacroUtils.SETTER_PREFIX + field.name, fields) == null){
-					trace("creating setter!");
+					trace('creating setter for ${field.name}!');
 
 					// inject setter
 					fields.push({
@@ -85,19 +86,32 @@ class Reactor {
 					case FFun(func):{
 						trace("injecting setter!");
 
-						func.expr = macro {
-							trace('[${className}] "${field.name}" update to: ' + Std.string($i{func.args[0].name}));
-							onUpdate();
-							${func.expr};
-						};
+						var core:Bool = (field.name != "eee"); // TODO check actuall type
+
+						if(core){
+							func.expr = macro {
+								trace('[${className}] "${field.name}" core update to: ' + Std.string($i{func.args[0].name}));
+
+								${func.expr};
+							};
+						}
+						else{
+							func.expr = macro {
+								trace('[${className}] "${field.name}" object update to: ' + Std.string($i{func.args[0].name}));
+
+								//$i{func.args[0].name}.listeners.push(onUpdate);
+
+								trace($i{func.args[0].name});
+
+								${func.expr};
+							};
+						}
 					}
 
 					default: {}
 				}
 			}
 		}
-
-
 
 		// inject update
 		fields.push({
@@ -109,6 +123,13 @@ class Reactor {
 				},
 				ret: null
 			}),
+			pos: Context.currentPos()
+		});
+
+		fields.push({
+			name: "listeners",
+			access: [Access.APublic],
+			kind: FieldType.FVar(macro:Array<Void->Void>, macro $v{new Array<Void->Void>()}),
 			pos: Context.currentPos()
 		});
 
