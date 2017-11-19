@@ -11,13 +11,13 @@ import haxe.macro.Expr;
 
 class Reactor {
 	public static function build():Array<Field> {
-		trace("macro build");
-
 		var fields:Array<Field> = Context.getBuildFields();
 		var className:String = TypeTools.toString(Context.getLocalType());
 
-		for(field in fields){
-			//trace("field" + field);
+		trace("[" + className + "] ");
+
+		for(field in fields.copy()){
+			trace("[" + className + "] " + field.name);
 
 			var inject:Bool = false;
 
@@ -101,7 +101,7 @@ class Reactor {
 
 								//$i{func.args[0].name}.listeners.push(onUpdate);
 
-								trace($i{func.args[0].name});
+								trace($i{func.args[0].name}.listeners);
 
 								${func.expr};
 							};
@@ -110,8 +110,12 @@ class Reactor {
 
 					default: {}
 				}
+
+				trace("[" + className + "] " + "setters done...");
 			}
 		}
+
+		trace("[" + className + "] Injecting onUpdate");
 
 		// inject update
 		fields.push({
@@ -126,12 +130,17 @@ class Reactor {
 			pos: Context.currentPos()
 		});
 
+		trace("[" + className + "] Injecting listeners");
+
+		// inject listeners
 		fields.push({
 			name: "listeners",
 			access: [Access.APublic],
 			kind: FieldType.FVar(macro:Array<Void->Void>, macro $v{new Array<Void->Void>()}),
 			pos: Context.currentPos()
 		});
+
+		trace("[" + className + "] " + "DONE");
 
 		return fields;
 	}
