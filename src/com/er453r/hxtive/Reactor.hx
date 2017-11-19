@@ -14,26 +14,19 @@ class Reactor {
 		var fields:Array<Field> = Context.getBuildFields();
 		var className:String = TypeTools.toString(Context.getLocalType());
 
-		trace("[" + className + "] ");
+		trace('[${className}}] REACTING');
 
 		for(field in fields.copy()){
-			trace("[" + className + "] " + field.name);
-
 			var inject:Bool = false;
 
 			switch(field.kind){
 				case FieldType.FProp(get, set, type, expr):{
-					trace('property ${ComplexTypeTools.toString(type)}, ${field.name} ${ExprTools.toString(expr)}');
+					trace('[${className}}] [${field.name}] property ${ComplexTypeTools.toString(type)}, ${field.name} ${ExprTools.toString(expr)}');
 
 					inject = true;
 				}
 				case FieldType.FVar(type, expr):{
-					trace('variable ${ComplexTypeTools.toString(type)}, ${field.name}  ${ExprTools.toString(expr)}');
-
-					//trace(type);
-//					trace(TypeTools.getClass(TypeTools.followWithAbstracts(ComplexTypeTools.toType(type))));
-
-					trace(ComplexTypeTools.toType(type));
+					trace('[${className}}] [${field.name}] variable ${ComplexTypeTools.toString(type)}, ${field.name} ${ExprTools.toString(expr)}');
 
 					inject = true;
 				}
@@ -44,7 +37,7 @@ class Reactor {
 			if(inject){
 				// if has no setter
 				if(MacroUtils.getField(MacroUtils.SETTER_PREFIX + field.name, fields) == null){
-					trace('creating setter for ${field.name}!');
+					trace('[${className}}] [${field.name}] creating setter');
 
 					// inject setter
 					fields.push({
@@ -84,7 +77,7 @@ class Reactor {
 				// inject code to setter
 				switch(MacroUtils.getField(MacroUtils.SETTER_PREFIX + field.name, fields).kind){
 					case FFun(func):{
-						trace("injecting setter!");
+						trace('[${className}}] [${field.name}] injecting setter');
 
 						var core:Bool = (field.name != "eee"); // TODO check actuall type
 
@@ -111,11 +104,11 @@ class Reactor {
 					default: {}
 				}
 
-				trace("[" + className + "] " + "setters done...");
+				trace('[${className}}] [${field.name}] setter done');
 			}
 		}
 
-		trace("[" + className + "] Injecting onUpdate");
+		trace('[${className}}] injecting onUpdate');
 
 		// inject update
 		fields.push({
@@ -130,7 +123,7 @@ class Reactor {
 			pos: Context.currentPos()
 		});
 
-		trace("[" + className + "] Injecting listeners");
+		trace('[${className}}] injecting listeners');
 
 		// inject listeners
 		fields.push({
@@ -140,7 +133,7 @@ class Reactor {
 			pos: Context.currentPos()
 		});
 
-		trace("[" + className + "] " + "DONE");
+		trace('[${className}}] DONE');
 
 		return fields;
 	}
