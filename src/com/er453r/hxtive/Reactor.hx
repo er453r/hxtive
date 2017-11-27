@@ -91,6 +91,8 @@ class Reactor {
 							func.expr = macro {
 								trace('[${className}] "${field.name}" core update to: ' + Std.string($i{func.args[0].name}));
 
+								notify();
+
 								${func.expr};
 							};
 						}
@@ -99,6 +101,8 @@ class Reactor {
 								trace('[${className}] "${field.name}" object update to: ' + Std.string($i{func.args[0].name}));
 
 								$i{func.args[0].name}.listeners.push(onUpdate);
+
+								notify();
 
 								${func.expr};
 							};
@@ -121,6 +125,22 @@ class Reactor {
 				args: [],
 				expr: macro {
 					trace('[${className}] OBJECT UPDATE');
+				},
+				ret: null
+			}),
+			pos: Context.currentPos()
+		});
+
+		// inject update
+		fields.push({
+			name: "notify",
+			kind: FieldType.FFun({
+				args: [],
+				expr: macro {
+					trace('[${className}] OBJECT NOTIFY');
+
+					for(listener in listeners)
+						listener();
 				},
 				ret: null
 			}),
