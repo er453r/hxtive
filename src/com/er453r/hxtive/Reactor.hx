@@ -19,14 +19,20 @@ class Reactor {
 		for(field in fields.copy()){
 			var inject:Bool = false;
 
+			var complexType:ComplexType = null;
+
 			switch(field.kind){
 				case FieldType.FProp(get, set, type, expr):{
 					trace('[${className}}] [${field.name}] property ${ComplexTypeTools.toString(type)}, ${field.name} ${ExprTools.toString(expr)}');
+
+					complexType = type;
 
 					inject = true;
 				}
 				case FieldType.FVar(type, expr):{
 					trace('[${className}}] [${field.name}] variable ${ComplexTypeTools.toString(type)}, ${field.name} ${ExprTools.toString(expr)}');
+
+					complexType = type;
 
 					inject = true;
 				}
@@ -43,7 +49,7 @@ class Reactor {
 					fields.push({
 						name: MacroUtils.SETTER_PREFIX + field.name,
 						kind: FieldType.FFun({
-							args: [{ name:'value', type:null}],
+							args: [{ name:'value', type:complexType}],
 							expr: macro return $i{field.name} = value,
 							ret: null
 						}),
@@ -92,9 +98,7 @@ class Reactor {
 							func.expr = macro {
 								trace('[${className}] "${field.name}" object update to: ' + Std.string($i{func.args[0].name}));
 
-								//$i{func.args[0].name}.listeners.push(onUpdate);
-
-								trace($i{func.args[0].name}.listeners);
+								$i{func.args[0].name}.listeners.push(onUpdate);
 
 								${func.expr};
 							};
