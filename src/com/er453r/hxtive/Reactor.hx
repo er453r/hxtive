@@ -133,12 +133,17 @@ class Reactor {
 			}),
 			pos: Context.currentPos()
 		});*/
-				fields.push({
+
+		var stringType:ComplexType = Context.toComplexType(Context.getType("String"));
+		var anyType:ComplexType = Context.toComplexType(Context.getType("Any"));
+		var changeEventType:ComplexType = Context.toComplexType(Context.getType("ChangeEvent"));
+
+		fields.push({
 			name: "notify",
 			kind: FieldType.FFun({
-				args: [{ name:'fieldName', type:String}, { name:'oldValue', type:Any}, { name:'newValue', type:Any}, { name:'parent', type:ChangeEvent}],
+				args: [{ name:'fieldName', type:stringType}, {name:'oldValue', type:anyType}, {name:'newValue', type:anyType}, {name:'parent', type:changeEventType}],
 				expr: macro {
-					var event:ChangeEvent = new ChangeEvent(this, fieldName, oldValue, newValue, parent);
+					var event:ChangeEvent = new ChangeEvent(null, fieldName, oldValue, newValue, parent);
 
 					for(listener in listeners)
 						listener(event);
