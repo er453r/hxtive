@@ -49,9 +49,9 @@ class Reactor {
 					fields.push({
 						name: MacroUtils.SETTER_PREFIX + field.name,
 						kind: FieldType.FFun({
-							args: [{ name:'value', type:complexType}],
-							expr: macro return $i{field.name} = value,
-							ret: null
+							args: [{ name:'derp', type:complexType}],
+							expr: macro return $i{field.name} = derp, // this does not work with 'value' name
+							ret: complexType
 						}),
 						pos: Context.currentPos()
 					});
@@ -91,7 +91,7 @@ class Reactor {
 							func.expr = macro {
 								trace('[${className}] "${field.name}" core update to: ' + Std.string($i{func.args[0].name}));
 
-								notify();
+								//notify(field.name, func.args[0].name, func.args[0].name, null);
 
 								${func.expr};
 							};
@@ -102,7 +102,7 @@ class Reactor {
 
 								$i{func.args[0].name}.listeners.push(onUpdate);
 
-								notify();
+								//notify();
 
 								${func.expr};
 							};
@@ -119,28 +119,29 @@ class Reactor {
 		trace('[${className}}] injecting onUpdate');
 
 		// inject update
-		fields.push({
-			name: "onUpdate",
+/*		fields.push({
+			name: "notify",
 			kind: FieldType.FFun({
-				args: [],
+				args: [{ name:'field', type:String}, { name:'oldValue', type:Any}, { name:'newValue', type:Any}, { name:'parent', type:ChangeEvent}],
 				expr: macro {
-					trace('[${className}] OBJECT UPDATE');
+					var event:ChangeEvent = new ChangeEvent(this, field, oldValue, newValue, parent);
+
+					for(listener in listeners)
+						listener(event);
 				},
 				ret: null
 			}),
 			pos: Context.currentPos()
-		});
-
-		// inject update
-		fields.push({
+		});*/
+				fields.push({
 			name: "notify",
 			kind: FieldType.FFun({
-				args: [],
+				args: [{ name:'fieldName', type:String}, { name:'oldValue', type:Any}, { name:'newValue', type:Any}, { name:'parent', type:ChangeEvent}],
 				expr: macro {
-					trace('[${className}] OBJECT NOTIFY');
+					var event:ChangeEvent = new ChangeEvent(this, fieldName, oldValue, newValue, parent);
 
 					for(listener in listeners)
-						listener();
+						listener(event);
 				},
 				ret: null
 			}),
@@ -153,7 +154,7 @@ class Reactor {
 		fields.push({
 			name: "listeners",
 			access: [Access.APublic],
-			kind: FieldType.FVar(macro:Array<Void->Void>, macro $v{new Array<Void->Void>()}),
+			kind: FieldType.FVar(macro:Array<ChangeEvent->Void>, macro $v{new Array<ChangeEvent->Void>()}),
 			pos: Context.currentPos()
 		});
 

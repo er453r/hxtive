@@ -1,27 +1,15 @@
 package com.er453r.hxtive;
 
+import com.er453r.hxtive.test.TestObject;
+
 class Test{
-	private var number:Float = 0.4;
-	private var name:String = "BLorp";
-
-	private var eee:Pff;
-
 	public static function main(){
-		new Test();
-	}
+		trace("Start");
 
-	public function new (){
-		trace("derp");
+		var testObject:TestObject = new TestObject();
 
-		trace('${number} ${name}');
+		testObject.name = "new name";
 
-		number = 4.5;
-		name = "test";
-
-		trace('${number} ${name}');
-
-		eee = new Pff("lolz");
-
-		eee.a = "pliz";
+		trace("Done");
 	}
 }
