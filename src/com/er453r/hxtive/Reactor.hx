@@ -143,7 +143,7 @@ class Reactor {
 			kind: FieldType.FFun({
 				args: [{ name:'fieldName', type:stringType}, {name:'oldValue', type:anyType}, {name:'newValue', type:anyType}, {name:'parent', type:changeEventType}],
 				expr: macro {
-					var event:ChangeEvent = new ChangeEvent(null, fieldName, oldValue, newValue, parent);
+					var event:ChangeEvent = new ChangeEvent(this, fieldName, oldValue, newValue, parent);
 
 					for(listener in listeners)
 						listener(event);

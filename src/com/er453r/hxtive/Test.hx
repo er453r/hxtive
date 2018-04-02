@@ -8,6 +8,8 @@ class Test{
 
 		var testObject:TestObject = new TestObject();
 
+
+
 		testObject.name = "new name";
 
 		trace("Done");
